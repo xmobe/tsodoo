@@ -1,4 +1,4 @@
-# tsodoo [![tsodoo license](https://img.shields.io/github/license/xmobe-com/tsodoo)](https://github.com/xmobe-com/tsodoo)
+# tsodoo [![tsodoo license](https://raster.shields.io/github/license/xmobe-com/tsodoo.png)](https://github.com/xmobe-com/tsodoo)
 
 [![forthebadge](https://forthebadge.com/images/badges/built-by-developers.svg)](https://quanganh206.github.io)
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://xmobe.com)
