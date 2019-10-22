@@ -7,15 +7,8 @@
 [![forthebadge](https://forthebadge.com/images/badges/its-not-a-lie-if-you-believe-it.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/check-it-out.svg)](https://forthebadge.com)
 
-# tsodoo
-
 ## Description
 - Typescript Node Module for Odoo using XML-RPC
-
+        
 ## Contributors
 - quanganh206
-
-
-
-
-# tsodoo
