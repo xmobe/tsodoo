@@ -30,7 +30,11 @@ export class OdooXMLPRC {
     this._config = {};
 
     if (config) {
-      const urlparts = url.parse(config.url || '');
+      let urlparts: any = {};
+      if (config.url) {
+        urlparts = url.parse(config.url || '');
+      }
+
       this._config = {
         host: urlparts.hostname,
         port: config.port || urlparts.port,
@@ -158,6 +162,18 @@ export class OdooXMLPRC {
     });
   }
 
+  public methodCall(model: string, method: string, params: any): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.execute_kw(model, method, params)
+        .then((result) => {
+          resolve(result);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
+
   private execute_kw(model: string, method: string, params: any): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       const clientOptions: ClientOptions = {
@@ -184,6 +200,7 @@ export class OdooXMLPRC {
       for (var i = 0; i < params.length; i++) {
         oparams.push(params[i]);
       }
+
       client.methodCall('execute_kw', oparams, function (error, value) {
         if (error) {
           reject(error);
