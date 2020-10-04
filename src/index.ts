@@ -1,5 +1,5 @@
-import * as url from 'url';
-import { createClient, createSecureClient, Client } from 'xmlrpc';
+import * as url from "url";
+import { createClient, createSecureClient, Client } from "xmlrpc";
 
 export interface IOdooConfig {
   url?: string;
@@ -19,20 +19,22 @@ interface ClientOptions {
   url?: string;
   cookies?: boolean;
   headers?: { [header: string]: string };
-  basic_auth?: { user: string, pass: string };
+  basic_auth?: { user: string; pass: string };
   method?: string;
 }
 export class OdooXMLPRC {
   private _config: IOdooConfig;
   private _uid: any;
+  private _client: any;
 
+  static count: number = 0;
   constructor(private config: IOdooConfig) {
     this._config = {};
 
     if (config) {
       let urlparts: any = {};
       if (config.url) {
-        urlparts = url.parse(config.url || '');
+        urlparts = url.parse(config.url || "");
       }
 
       this._config = {
@@ -41,14 +43,14 @@ export class OdooXMLPRC {
         db: config.db,
         username: config.username,
         password: config.password,
-        secure: true,
+        secure: true
       };
 
-      if (urlparts.protocol !== 'https:') {
+      if (urlparts.protocol !== "https:") {
         this._config.secure = false;
       }
     } else {
-      throw new Error('No configuration')
+      throw new Error("No configuration");
     }
   }
 
@@ -56,8 +58,8 @@ export class OdooXMLPRC {
     return new Promise<any>((resolve, reject) => {
       const clientOptions: ClientOptions = {
         host: this._config.host,
-        port: parseInt(this._config.port || '80'),
-        path: '/xmlrpc/2/common'
+        port: parseInt(this._config.port || "80"),
+        path: "/xmlrpc/2/common"
       };
 
       let client: Client;
@@ -68,65 +70,93 @@ export class OdooXMLPRC {
         client = createSecureClient(clientOptions);
       }
 
+      this._client = client;
+
       const params = [];
       params.push(this._config.db);
       params.push(this._config.username);
       params.push(this._config.password);
       params.push({});
 
-      client.methodCall('authenticate', params, (error, value) => {
-        if (error) {
-          reject(error);
+      try {
+        if (!this._uid) {
+          this._client.methodCall("authenticate", params, (error: any, value: any) => {
+            if (error) {
+              reject(error);
+            }
+  
+            if (!value) {
+              reject(new Error("No UID returned from authentication"));
+            }
+  
+            this._uid = value;
+            OdooXMLPRC.count++;
+  
+            resolve(this._uid);
+          });
+        } else {
+          resolve(this._uid);
         }
-
-        if (!value) {
-          reject(new Error('No UID returned from authentication'));
-        }
-
-        this._uid = value;
-
-        resolve(this._uid);
-      });
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
   public create(model: string, params: any): Promise<any> {
     return new Promise<any>((resolve, reject) => {
-      this.execute_kw(model, 'create', params)
-        .then((result) => {
-          resolve(result);
-        })
-        .catch(error => {
-          reject(error);
-        });
+      try {
+        this.execute_kw(model, "create", params)
+          .then(result => {
+            resolve(result);
+          })
+          .catch(error => {
+            reject(error);
+          });
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
   public update(model: string, params: any): Promise<any> {
     return new Promise<any>((resolve, reject) => {
-      this.execute_kw(model, 'write', params)
-        .then((result) => {
-          resolve(result);
-        })
-        .catch(error => {
-          reject(error);
-        });
+      try {
+        this.execute_kw(model, "write", params)
+          .then(result => {
+            resolve(result);
+          })
+          .catch(error => {
+            reject(error);
+          });
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
   public delete(model: string, params: any): Promise<any> {
     return new Promise<any>((resolve, reject) => {
-      this.execute_kw(model, 'unlink', params)
-        .then((result) => {
-          resolve(result);
-        })
-        .catch(error => {
-          reject(error);
-        });
+      try {
+        this.execute_kw(model, "unlink", params)
+          .then(result => {
+            resolve(result);
+          })
+          .catch(error => {
+            reject(error);
+          });
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
-  public list(model: string, fields?: string[], offset?: number, limit?: number): Promise<any> {
+  public list(
+    model: string,
+    fields?: string[],
+    offset?: number,
+    limit?: number
+  ): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       if (!fields) fields = [];
       if (!offset) offset = 0;
@@ -140,37 +170,49 @@ export class OdooXMLPRC {
       var params = [];
       params.push(inParams);
 
-      this.execute_kw(model, 'search_read', params)
-        .then((result) => {
-          resolve(result);
-        })
-        .catch(error => {
-          reject(error);
-        });
+      try {
+        this.execute_kw(model, "search_read", params)
+          .then(result => {
+            resolve(result);
+          })
+          .catch(error => {
+            reject(error);
+          });
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
   public search(model: string, params: any): Promise<any> {
     return new Promise<any>((resolve, reject) => {
-      this.execute_kw(model, 'search_read', params)
-        .then((result) => {
-          resolve(result);
-        })
-        .catch(error => {
-          reject(error);
-        });
+      try {
+        this.execute_kw(model, "search_read", params)
+          .then(result => {
+            resolve(result);
+          })
+          .catch(error => {
+            reject(error);
+          });
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
   public methodCall(model: string, method: string, params: any): Promise<any> {
     return new Promise<any>((resolve, reject) => {
-      this.execute_kw(model, method, params)
-        .then((result) => {
-          resolve(result);
-        })
-        .catch(error => {
-          reject(error);
-        });
+      try {
+        this.execute_kw(model, method, params)
+          .then(result => {
+            resolve(result);
+          })
+          .catch(error => {
+            reject(error);
+          });
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
@@ -178,8 +220,8 @@ export class OdooXMLPRC {
     return new Promise<any>((resolve, reject) => {
       const clientOptions: ClientOptions = {
         host: this._config.host,
-        port: parseInt(this._config.port || '80'),
-        path: '/xmlrpc/2/object'
+        port: parseInt(this._config.port || "80"),
+        path: "/xmlrpc/2/object"
       };
 
       let client: Client;
@@ -201,13 +243,17 @@ export class OdooXMLPRC {
         oparams.push(params[i]);
       }
 
-      client.methodCall('execute_kw', oparams, function (error, value) {
-        if (error) {
-          reject(error);
-        }
+      try {
+        client.methodCall("execute_kw", oparams, function(error: any, value: any) {
+          if (error) {
+            reject(error);
+          }
 
-        resolve(value);
-      });
+          resolve(value);
+        });
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 }
