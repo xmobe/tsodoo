@@ -230,7 +230,8 @@ export class OdooXMLPRC {
       const clientOptions: ClientOptions = {
         host: this._config.host,
         port: parseInt(this._config.port || "80"),
-        path: "/xmlrpc/2/object"
+        path: "/xmlrpc/2/object",
+        basic_auth: this._config.basic_auth,
       };
 
       let client: Client;
