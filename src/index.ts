@@ -9,6 +9,7 @@ export interface IOdooConfig {
   username?: string;
   password?: string;
   secure?: boolean;
+  basic_auth?: { user: string; pass: string };
 }
 
 // need to remove, copy from xmlrpc
@@ -48,6 +49,13 @@ export class OdooXMLPRC {
 
       if (urlparts.protocol !== "https:") {
         this._config.secure = false;
+      } else {
+        this._config.port = this._config.port ?? "443"
+      }
+        
+      if (urlparts.auth) {
+        const [user, pass] = urlparts.auth.split(":");
+        this._config.basic_auth = { user, pass };
       }
     } else {
       throw new Error("No configuration");
@@ -59,7 +67,8 @@ export class OdooXMLPRC {
       const clientOptions: ClientOptions = {
         host: this._config.host,
         port: parseInt(this._config.port || "80"),
-        path: "/xmlrpc/2/common"
+        path: "/xmlrpc/2/common",
+        basic_auth: this._config.basic_auth,
       };
 
       let client: Client;
@@ -221,7 +230,8 @@ export class OdooXMLPRC {
       const clientOptions: ClientOptions = {
         host: this._config.host,
         port: parseInt(this._config.port || "80"),
-        path: "/xmlrpc/2/object"
+        path: "/xmlrpc/2/object",
+        basic_auth: this._config.basic_auth,
       };
 
       let client: Client;
